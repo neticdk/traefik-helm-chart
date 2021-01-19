@@ -17,3 +17,4 @@ jobs:
           owner: neticdk
           repository: traefik-helm-chart
           branch: gh-pages
+          linting: off
