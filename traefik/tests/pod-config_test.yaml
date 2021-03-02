@@ -51,6 +51,17 @@ tests:
       - equal:
           path: spec.template.spec.volumes[0].persistentVolumeClaim.claimName
           value: existing-pvc
+      - equal:
+          path: spec.template.spec.volumes[0].name
+          value: data
+  - it: should have pvc with specified name
+    set:
+      persistence:
+        name: my-data
+    asserts:
+      - equal:
+          path: spec.template.spec.volumes[0].name
+          value: my-data
   - it: should have initContainer with specified value
     set:
       deployment:
@@ -190,3 +201,21 @@ tests:
           content:
             key: "RSA"
             operator: "Destructor"
+  - it: should have all k8s provider enabled when gateway provider is enabled
+    set:
+      experimental:
+        kubernetesGateway:
+          enabled: true
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].args
+          content:
+            "--providers.kubernetescrd"
+      - contains:
+          path: spec.template.spec.containers[0].args
+          content:
+            "--providers.kubernetesingress"
+      - contains:
+          path: spec.template.spec.containers[0].args
+          content:
+            "--providers.kubernetesgateway"
