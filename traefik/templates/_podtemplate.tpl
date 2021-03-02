@@ -77,7 +77,7 @@
           {{- toYaml . | nindent 10 }}
         {{- end }}
         volumeMounts:
-          - name: data
+          - name: {{ .Values.persistence.name }}
             mountPath: {{ .Values.persistence.path }}
             {{- if .Values.persistence.subPath }}
             subPath: {{ .Values.persistence.subPath }}
@@ -118,6 +118,10 @@
           {{- if and .Values.service.enabled .Values.providers.kubernetesIngress.publishedService.enabled }}
           - "--providers.kubernetesingress.ingressendpoint.publishedservice={{ template "providers.kubernetesIngress.publishedServicePath" . }}"
           {{- end }}
+          {{- end }}
+          {{- if .Values.experimental.kubernetesGateway.enabled }}
+          - "--providers.kubernetesgateway"
+          - "--experimental.kubernetesgateway"
           {{- end }}
           {{- if and .Values.rbac.enabled .Values.rbac.namespaced }}
           - "--providers.kubernetescrd.namespaces={{ template "providers.kubernetesCRD.namespaces" . }}"
@@ -211,7 +215,7 @@
         {{- toYaml .Values.deployment.additionalContainers | nindent 6 }}
       {{- end }}
       volumes:
-        - name: data
+        - name: {{ .Values.persistence.name }}
           {{- if .Values.persistence.enabled }}
           persistentVolumeClaim:
             claimName: {{ default (include "traefik.fullname" .) .Values.persistence.existingClaim }}
