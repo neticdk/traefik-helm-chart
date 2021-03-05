@@ -67,6 +67,11 @@
           protocol: {{ default "TCP" $config.protocol | quote }}
         {{- end }}
         {{- end }}
+        {{- if .Values.metrics.prometheus.enabled }}
+        - name: metrics
+          containerPort: {{ .Values.metrics.prometheus.port }}
+          protocol: TCP
+        {{- end }}
         {{- with .Values.securityContext }}
         securityContext:
           {{- toYaml . | nindent 10 }}
@@ -149,6 +154,10 @@
           {{- end }}
           {{- end }}
           {{- end }}
+          {{- end }}
+          {{- if .Values.metrics.prometheus.enabled }}
+          - "--entrypoints.metrics.address=:{{ .Values.metrics.prometheus.port }}/tcp"
+          - "--metrics.prometheus.entryPoint=metrics"
           {{- end }}
           {{- with .Values.logs }}
           {{- if .general.format }}
